@@ -1,0 +1,6 @@
+Apache Echarts，an open source visualization charting library based on JavaScript
+  https://echarts.apache.org/zh/index.html
+
+echarts4r, literally echarts for r, an R package
+  https://echarts4r.john-coene.com/articles/get_started
+  https://cosx.org/2021/12/introduction-to-echarts4r/
