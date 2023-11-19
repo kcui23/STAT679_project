@@ -1,0 +1,35 @@
+---
+title: "STAT679 Project"
+author: "Ziyi Song"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(jsonlite)
+library(tidygraph)
+library(ggraph)
+data<-read.csv('trade_1988_2021.csv')
+data<-data[data$Year==2020&data$PartnerISO3!='WLD',]
+data<-data %>% 
+      arrange(desc(TradeValue.in.1000.USD)) %>%   # 按照value列进行降序排列
+      slice(1:300)
+from_to<-data[,c(1,3)]
+colnames(from_to)<-c('from','to')
+G<-tbl_graph(edges = unique(from_to), node_key = unique(rbind(data[,c(1,3)],data[,c(3,1)])[,2]))
+
+
+nodes <- G %N>%
+  as_tibble()
+edges <- G %E>%
+  as_tibble() %>%
+  mutate(value = data$TradeValue.in.1000.USD, name_source = data$ReporterISO3, name_target = data$PartnerISO3) %>%
+  rename(source = from, target = to)
+
+edges$source=edges$source-min(edges$source)
+edges$target=edges$target-min(edges$target)
+
+
+write_json(list(nodes = nodes, links = edges), "International.json")
+```
+
