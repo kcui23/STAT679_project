@@ -160,8 +160,8 @@ function mousemove(event) {
         "Bearish: " + d.bearish + "<br/>" +
         "Neutral: " + d.neutral)
         .transition()
-        .duration(150)
-        .ease(d3.easePoly.exponent(2))
+        .duration(100)
+        .ease(d3.easeLinear)
         .style("left", xPosition + "px")
         .style("top", yPosition + "px")
         .style("opacity", 0.8) 
