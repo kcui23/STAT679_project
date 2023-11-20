@@ -1,5 +1,10 @@
 let data, combinedData;
 let parseDate = d3.timeParse("%Y-%m-%d")
+let bisectDate = d3.bisector(function (d) { return parseDate(d.date); }).left
+let tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+
 let margin = { top: 30, right: 20, bottom: 110, left: 50 },
     margin2 = { top: 430, right: 20, bottom: 30, left: 50 },
     width = 1500 - margin.left - margin.right,
@@ -110,6 +115,42 @@ function add_axis() {
         .call(yAxis)
 }
 
+function mousemove(event) {
+    let x0 = x.invert(d3.pointer(event, this)[0]),
+        i = bisectDate(combinedData, x0, 1),
+        d0 = combinedData[i - 1],
+        d1 = combinedData[i],
+        d = x0 - parseDate(d0.date) > parseDate(d1.date) - x0 ? d1 : d0;
+
+    tooltip.style("opacity", 1)
+    tooltip.html("Date: " + d.date + "<br/>" +
+        "Price: " + d.close + "<br/>" +
+        "Bullish: " + d.bullish + "<br/>" +
+        "Bearish: " + d.bearish + "<br/>" +
+        "Neutral: " + d.neutral)
+        .style("left", (event.pageX) + "px")
+        .style("top", (event.pageY - 28) + "px");
+}
+
+function add_hover_info() {
+    let mouseG = focus.append("g")
+        .attr("class", "mouse-over-effects")
+
+    mouseG.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "none")
+        .attr("pointer-events", "all")
+        .on("mouseout", () => { tooltip.style("display", "none"); })
+        .on("mouseover", () => { tooltip.style("display", "block"); })
+        .on("mousemove", mousemove)
+
+    focus.selectAll(".bullishArea, .bearishArea")
+        .on("mousemove", function (event) {
+            console.log("Mouse over area");
+        });
+}
+
 function add_brush() {
     context.append("g")
         .attr("class", "brush")
@@ -215,8 +256,9 @@ function visualize(ini_data) {
 
     add_main_chart(combinedData)
     add_axis()
-    add_brush()
     addSentimentLinesAndAreas(combinedData)
+    add_brush()
+    add_hover_info()
 }
 
 Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone2/news_nvda_1d_data.csv"),
