@@ -4,6 +4,26 @@ let bisectDate = d3.bisector(function (d) { return parseDate(d.date); }).left
 let tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0)
+    .style("position", "absolute")
+    .style("pointer-events", "none")
+d3.select("head").append("style").html(`
+    .tooltip {
+      background-color: #fff;
+      background-image: repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.1) 10px,
+        rgba(0, 0, 0, 0.2) 10px,
+        rgba(0, 0, 0, 0.2) 20px
+      );
+      border: 1px solid #ddd;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      padding: 8px;
+      pointer-events: none;
+      position: absolute;
+    }
+  `);
+
 
 let margin = { top: 30, right: 20, bottom: 110, left: 50 },
     margin2 = { top: 430, right: 20, bottom: 30, left: 50 },
@@ -131,15 +151,24 @@ function mousemove(event) {
         d1 = combinedData[i],
         d = x0 - parseDate(d0.date) > parseDate(d1.date) - x0 ? d1 : d0;
 
-    tooltip.style("opacity", 1)
+    let xPosition = x(parseDate(d.date)) + 100 + margin.left - tooltip.node().getBoundingClientRect().width / 2,
+        yPosition = y(d.close) + y(d.bearish) * 0.1 + margin.top - tooltip.node().getBoundingClientRect().height - 10; // 10px above the data point
+
     tooltip.html("Date: " + d.date + "<br/>" +
-        "Price: " + d.close + "<br/>" +
+        "Price: " + d.close.toFixed(2) + "<br/>" +
         "Bullish: " + d.bullish + "<br/>" +
         "Bearish: " + d.bearish + "<br/>" +
         "Neutral: " + d.neutral)
-        .style("left", (event.pageX) + "px")
-        .style("top", (event.pageY - 28) + "px");
+        .transition()
+        .duration(150)
+        .ease(d3.easePoly.exponent(2))
+        .style("left", xPosition + "px")
+        .style("top", yPosition + "px")
+        .style("opacity", 0.8) 
+        .style("z-index", "10")
 }
+
+
 
 function add_hover_info() {
     let mouseG = focus.append("g")
@@ -152,7 +181,7 @@ function add_hover_info() {
             "fill": "none",
             "pointer-events": "all"
         })
-        .on("mouseout", () => { tooltip.style("display", "none"); })
+        // .on("mouseout", () => { tooltip.style("display", "none"); })
         .on("mouseover", () => { tooltip.style("display", "block"); })
         .on("mousemove", mousemove)
 
@@ -242,7 +271,7 @@ function visualize(ini_data) {
     data = ini_data[0].map(function (d) {
         return {
             date: d.Date,
-            close: d.Close
+            close: parseFloat(d.Close)
         }
     })
     console.log(data)
