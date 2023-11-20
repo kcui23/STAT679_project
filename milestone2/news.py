@@ -143,12 +143,12 @@ def data_aggregation(news, ticker):
 
     data = pd.merge(price, news, on='time', how='left')
     data.fillna(0, inplace=True)
-    data.to_csv(f'news_{ticker}_1d_data.csv')
+    data.to_csv(f'news_{ticker}_time_close_sent.csv', index=False)
 
 
 if __name__ == '__main__':
     ticker = "nvda"
-    n_pages = 5
+    n_pages = 20
     file_name = f'news_{ticker}.csv'
     news = crawler(n_pages=n_pages, ticker=ticker)
     results = get_sentiment(news, ticker)
