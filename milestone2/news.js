@@ -64,19 +64,19 @@ let svg = d3.select("svg")
 
 svg.append("text")
     .attrs({
-        "x": (width / 2),
+        "x": 80,
         "y": (margin.top / 2 + 8),
-        "text-anchor": "middle",
-        "font-size": "25px",
-        "text-decoration": "underline",
-        "text": "Nvidia"
+        "text-anchor": "middle"
     })
+    .style("font-size", "25px")
+    .style("text-decoration", "underline")
+    .text("Nvidia")
 
 svg.append("defs")
     .append("clipPath")
+    .attr("id", "clip")
     .append("rect")
     .attrs({
-        "id": "clip",
         "width": width,
         "height": height
     })
@@ -114,7 +114,7 @@ function brushed(event) {
 function add_axis() {
     focus.append("g")
         .attrs({
-            "class": "grid",
+            "class": "x axis",
             "transform": "translate(0," + height + ")"
         })
         .call(xAxis.tickFormat(d3.timeFormat("%Y %b")))
