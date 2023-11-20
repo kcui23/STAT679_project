@@ -57,22 +57,29 @@ let brush = d3.brushX()
     .on("brush end", brushed)
 
 let svg = d3.select("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attrs({
+        "width": width + margin.left + margin.right,
+        "height": height + margin.top + margin.bottom
+    })
 
 svg.append("text")
-    .attr("x", 80)
-    .attr("y", margin.top / 2 + 8)
-    .attr("text-anchor", "middle")
-    .style("font-size", "25px")
-    .style("text-decoration", "underline")
-    .text("Nvidia");
+    .attrs({
+        "x": (width / 2),
+        "y": (margin.top / 2 + 8),
+        "text-anchor": "middle",
+        "font-size": "25px",
+        "text-decoration": "underline",
+        "text": "Nvidia"
+    })
 
-svg.append("defs").append("clipPath")
-    .attr("id", "clip")
+svg.append("defs")
+    .append("clipPath")
     .append("rect")
-    .attr("width", width)
-    .attr("height", height)
+    .attrs({
+        "id": "clip",
+        "width": width,
+        "height": height
+    })
 
 let focus = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -106,8 +113,10 @@ function brushed(event) {
 
 function add_axis() {
     focus.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
+        .attrs({
+            "class": "grid",
+            "transform": "translate(0," + height + ")"
+        })
         .call(xAxis.tickFormat(d3.timeFormat("%Y %b")))
 
     focus.append("g")
@@ -137,10 +146,12 @@ function add_hover_info() {
         .attr("class", "mouse-over-effects")
 
     mouseG.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("fill", "none")
-        .attr("pointer-events", "all")
+        .attrs({
+            "width": width,
+            "height": height,
+            "fill": "none",
+            "pointer-events": "all"
+        })
         .on("mouseout", () => { tooltip.style("display", "none"); })
         .on("mouseover", () => { tooltip.style("display", "block"); })
         .on("mousemove", mousemove)
@@ -166,55 +177,64 @@ function add_brush() {
 function add_main_chart(data) {
     focus.append("path")
         .datum(data)
-        .attr("class", "line")
-        .attr("d", line)
-        .attr("fill", "none")
-        .attr("stroke", "rgb(37, 93, 108)")
-        .attr("stroke-width", "3px")
-        .attr("clip-path", "url(#clip)")
+        .attrs({
+            "class": "line",
+            "d": line,
+            "fill": "none",
+            "stroke": "rgb(37, 93, 108)",
+            "stroke-width": "3px",
+            "clip-path": "url(#clip)"
+        })
 
     context.append("path")
         .datum(data)
-        .attr("class", "area")
-        .attr("d", area2)
-        .attr("clip-path", "url(#clip)")
+        .attrs({
+            "class": "area",
+            "d": area2,
+            "clip-path": "url(#clip)"
+        })
 }
 
 function addSentimentLinesAndAreas(combinedData) {
     focus.append("path")
         .datum(combinedData)
-        .attr("class", "bullishLine")
-        .attr("d", bullishLine)
-        .attr("stroke", "green")
-        .attr("fill", "none")
-        .attr("clip-path", "url(#clip)")
-
-
-    focus.append("path")
-        .datum(combinedData)
-        .attr("class", "bearishLine")
-        .attr("d", bearishLine)
-        .attr("stroke", "red")
-        .attr("fill", "none")
-        .attr("clip-path", "url(#clip)")
-
+        .attrs({
+            "class": "bullishLine",
+            "d": bullishLine,
+            "stroke": "green",
+            "fill": "none",
+            "clip-path": "url(#clip)"
+        })
 
     focus.append("path")
         .datum(combinedData)
-        .attr("class", "bullishArea")
-        .attr("d", bullishArea)
-        .style("fill", "lightgreen")
-        .attr("opacity", 0.5)
-        .attr("clip-path", "url(#clip)")
+        .attrs({
+            "class": "bearishLine",
+            "d": bearishLine,
+            "stroke": "red",
+            "fill": "none",
+            "clip-path": "url(#clip)"
+        })
 
     focus.append("path")
         .datum(combinedData)
-        .attr("class", "bearishArea")
-        .attr("d", bearishArea)
-        .style("fill", "lightcoral")
-        .attr("opacity", 0.5)
-        .attr("clip-path", "url(#clip)")
+        .attrs({
+            "class": "bullishArea",
+            "d": bullishArea,
+            "fill": "lightgreen",
+            "opacity": 0.5,
+            "clip-path": "url(#clip)"
+        })
 
+    focus.append("path")
+        .datum(combinedData)
+        .attrs({
+            "class": "bearishArea",
+            "d": bearishArea,
+            "fill": "lightcoral",
+            "opacity": 0.5,
+            "clip-path": "url(#clip)"
+        })
 }
 
 
