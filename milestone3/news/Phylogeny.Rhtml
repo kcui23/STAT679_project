@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-hierarchy@3"></script>
+    <link rel="stylesheet" href="Phylogeny.css">
+  </head>
+  <body>
+    <select id="country_select" multiple onchange="handleSelectChange()"/>
+      <option>China</option>
+      <option>UnitedStates</option>
+      <option>Netherlands</option>
+      <option>Australia</option>
+      <option>UnitedKingdom</option>
+      <option>Singapore</option>
+      <option>Switzerland</option>
+      <option>Korea</option>
+      <option>Japan</option>
+    </select>
+    <svg height=700 width=950>
+      <g id ="tree"/>
+      <g id="labels">
+        <text/>
+      </g>
+    </svg>
+  </body>
+  <script src="Phylogeny.js"></script>
+</html>
