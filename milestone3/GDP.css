@@ -1,0 +1,53 @@
+/* the command below was exported from https://fonts.google.com/ */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&family=Oswald&display=swap');
+
+#lines path {
+    fill: none;
+    stroke-width: 1px;
+    stroke: #a8a8a8;
+    stroke-opacity: 0.6;
+}
+
+#lines path.highlighted {
+    stroke-width: 2px;
+    stroke: #ff0000; /* Choose your highlight color */
+    stroke-opacity: 1;
+  }
+
+/* Add a class for highlighted map regions */
+#map path.highlighted {
+    stroke-width: 2px;
+    stroke: #ff0000;
+    stroke-opacity: 1;
+}
+
+#map path {
+    stroke: #060606;
+    stroke-width: 1px;
+}
+
+#name text {
+    font-family: "Shadows Into Light";
+    font-size: 20px;
+}
+
+#legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white; /* Add a background color to the legend */
+    border: 1px solid #ccc; /* Add a border for better visibility */
+    padding: 10px; /* Add some padding for better spacing */
+}
+
+#legend rect {
+    stroke: #272525;
+    stroke-width: 1px;
+}
+
+#legend text {
+    font-family: "Open Sans", sans-serif;
+    font-size: 10px;
+    fill: #272525;
+    margin-right: 10px; /* Add some margin to separate the color boxes from the text */
+}
