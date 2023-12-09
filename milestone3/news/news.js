@@ -43,24 +43,24 @@ let xAxis = d3.axisBottom(x),
 let bullishLine = d3.line()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y(function (d) { return y(d.close - 10 * d.bullish) })
+    .y(function (d) { return y(d.close - (-10) * d.bullish) })
 
 let bearishLine = d3.line()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y(function (d) { return y(d.close - (-10) * d.bearish) })
+    .y(function (d) { return y(d.close - 10 * d.bearish) })
 
 let bullishArea = d3.area()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y0(function (d) { return y(d.close - 10 * d.bullish) })
+    .y0(function (d) { return y(d.close - (-10) * d.bullish) })
     .y1(function (d) { return y(d.close) })
 
 let bearishArea = d3.area()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
     .y0(function (d) { return y(d.close) })
-    .y1(function (d) { return y(d.close - (-10) * d.bearish) })
+    .y1(function (d) { return y(d.close - 10 * d.bearish) })
 
 let line = d3.line()
     .curve(d3.curveBasis)
@@ -157,8 +157,8 @@ function mousemove(event) {
     tooltip.html("Date: " + d.date + "<br/>" +
         "Price: " + d.close.toFixed(2) + "<br/>" +
         "Bullish: " + d.bullish + "<br/>" +
-        "Bearish: " + d.bearish + "<br/>" +
-        "Neutral: " + d.neutral)
+        "Neutral: " + d.neutral + "<br/>" +
+        "Bearish: " + d.bearish)
         .transition()
         .duration(100)
         .ease(d3.easeLinear)
@@ -184,11 +184,6 @@ function add_hover_info() {
         // .on("mouseout", () => { tooltip.style("display", "none"); })
         .on("mouseover", () => { tooltip.style("display", "block"); })
         .on("mousemove", mousemove)
-
-    focus.selectAll(".bullishArea, .bearishArea")
-        .on("mousemove", function (event) {
-            console.log("Mouse over area");
-        });
 }
 
 function add_brush() {
@@ -265,7 +260,6 @@ function addSentimentLinesAndAreas(combinedData) {
             "clip-path": "url(#clip)"
         })
 }
-
 
 function visualize(ini_data) {
     data = ini_data[0].map(function (d) {
