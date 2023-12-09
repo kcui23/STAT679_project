@@ -156,9 +156,9 @@ def get_1d_data(ticker):
 if __name__ == '__main__':
     ticker = "aapl"
     n_pages = 20
+    get_1d_data(ticker)
     file_name = f'news_{ticker}.csv'
     news = crawler(n_pages=n_pages, ticker=ticker)
     results = get_sentiment(news, ticker)
     results.to_csv(file_name, index=False)
     data_aggregation(results, ticker)
-    get_1d_data(ticker)

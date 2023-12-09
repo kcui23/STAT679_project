@@ -43,24 +43,24 @@ let xAxis = d3.axisBottom(x),
 let bullishLine = d3.line()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y(function (d) { return y(d.close - (-10) * d.bullish) })
+    .y(function (d) { return y(d.close - (-d.close/40) * d.bullish) })
 
 let bearishLine = d3.line()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y(function (d) { return y(d.close - 10 * d.bearish) })
+    .y(function (d) { return y(d.close - (d.close/40) * d.bearish) })
 
 let bullishArea = d3.area()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y0(function (d) { return y(d.close - (-10) * d.bullish) })
+    .y0(function (d) { return y(d.close - (-d.close/40) * d.bullish) })
     .y1(function (d) { return y(d.close) })
 
 let bearishArea = d3.area()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
     .y0(function (d) { return y(d.close) })
-    .y1(function (d) { return y(d.close - 10 * d.bearish) })
+    .y1(function (d) { return y(d.close - (d.close/40) * d.bearish) })
 
 let line = d3.line()
     .curve(d3.curveBasis)
@@ -163,6 +163,7 @@ function mousemove(event) {
 function add_hover_info() {
     let mouseG = focus.append("g")
         .attr("class", "mouse-over-effects")
+        .attr("id", "hover_info")
 
     mouseG.append("rect")
         .attrs({
@@ -171,7 +172,7 @@ function add_hover_info() {
             "fill": "none",
             "pointer-events": "all"
         })
-        // .on("mouseout", () => { tooltip.style("display", "none"); })
+        .on("mouseout", () => { tooltip.style("display", "none"); })
         .on("mouseover", () => { tooltip.style("display", "block"); })
         .on("mousemove", mousemove)
 }
@@ -301,6 +302,7 @@ function clear() {
     d3.selectAll(".brush").remove()
     d3.selectAll(".y.axis").remove()
     d3.selectAll(".x.axis").remove()
+    d3.selectAll("#hover_info").remove()
 }
 
 function add_title(title) {
@@ -309,7 +311,7 @@ function add_title(title) {
         "nvda": "NVIDIA",
         "amzn": "Amazon",
         "msft": "Microsoft",
-        "goog": "Google",
+        "googl": "Google",
         "fb": "Facebook",
         "tsla": "Tesla"
     }
@@ -335,7 +337,8 @@ d3.select("#companySelect")
             Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_1d_data.csv"),
             d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_time_close_sent.csv")])
                 .then(visualize)
-        } else if (selectedValue === "appl") {
+        } else if (selectedValue === "aapl") {
+            console.log("aapl")
             Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_aapl_1d_data.csv"),
             d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_aapl_time_close_sent.csv")])
                 .then(visualize)
