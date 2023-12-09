@@ -43,24 +43,24 @@ let xAxis = d3.axisBottom(x),
 let bullishLine = d3.line()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y(function (d) { return y(d.close - (-d.close/40) * d.bullish) })
+    .y(function (d) { return y(d.close - (-d.close / 40) * d.bullish) })
 
 let bearishLine = d3.line()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y(function (d) { return y(d.close - (d.close/40) * d.bearish) })
+    .y(function (d) { return y(d.close - (d.close / 40) * d.bearish) })
 
 let bullishArea = d3.area()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
-    .y0(function (d) { return y(d.close - (-d.close/40) * d.bullish) })
+    .y0(function (d) { return y(d.close - (-d.close / 40) * d.bullish) })
     .y1(function (d) { return y(d.close) })
 
 let bearishArea = d3.area()
     .curve(d3.curveBasis)
     .x(function (d) { return x(parseDate(d.date)) })
     .y0(function (d) { return y(d.close) })
-    .y1(function (d) { return y(d.close - (d.close/40) * d.bearish) })
+    .y1(function (d) { return y(d.close - (d.close / 40) * d.bearish) })
 
 let line = d3.line()
     .curve(d3.curveBasis)
@@ -312,7 +312,7 @@ function add_title(title) {
         "amzn": "Amazon",
         "msft": "Microsoft",
         "googl": "Google",
-        "fb": "Facebook",
+        "meta": "META",
         "tsla": "Tesla"
     }
     title = company_name[title]
@@ -333,16 +333,11 @@ d3.select("#companySelect")
         clear()
         add_title(selectedValue)
 
-        if (selectedValue === "nvda") {
-            Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_1d_data.csv"),
-            d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_time_close_sent.csv")])
-                .then(visualize)
-        } else if (selectedValue === "aapl") {
-            console.log("aapl")
-            Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_aapl_1d_data.csv"),
-            d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_aapl_time_close_sent.csv")])
-                .then(visualize)
-        }
+        news_1d_data = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_1d_data.csv"
+        news_time_close_sent = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_time_close_sent.csv"
+        Promise.all([d3.csv(news_1d_data),
+        d3.csv(news_time_close_sent)])
+            .then(visualize)
     });
 
 

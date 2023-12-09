@@ -154,7 +154,7 @@ def get_1d_data(ticker):
 
 
 if __name__ == '__main__':
-    ticker = "aapl"
+    ticker = "tsla"
     n_pages = 20
     get_1d_data(ticker)
     file_name = f'news_{ticker}.csv'
