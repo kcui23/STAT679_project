@@ -146,25 +146,10 @@ def data_aggregation(news, ticker):
     data.to_csv(f'news_{ticker}_time_close_sent.csv', index=False)
 
 
-def data_aggregation2(news, ticker):
-    price = yf.download(ticker.upper(), start=news['time'].min(),
-                        end=news['time'].max(), interval="1d")
-    price.to_csv(f'news_{ticker}_price.csv')
-    price = pd.read_csv(f'news_{ticker.lower()}_price.csv')
-    price = price[['Date', 'Close']]
-    price['Date'] = pd.to_datetime(price['Date'])
-    price.columns = ['time', 'price']
-
-    news['time'] = pd.to_datetime(news['time'])
-    news = news.set_index('time')
-    news['count'] = 1
-    news = news.groupby([pd.Grouper(freq='D'), 'sentiment']).sum()
-    news = news.reset_index()
-    news = news.pivot(index='time', columns='sentiment', values='count')
-    news = news.fillna(0)
-
-    data = pd.merge(price, news, on='time', how='left')
-    data.fillna(0, inplace=True)
+def get_1d_data(ticker):
+    news = pd.read_csv("news_aapl.csv")
+    data = yf.download(ticker, start="2021-10-09",
+                       end=news['time'].max(), interval="1d")
     data.to_csv(f'news_{ticker}_1d_data.csv')
 
 
@@ -176,4 +161,4 @@ if __name__ == '__main__':
     results = get_sentiment(news, ticker)
     results.to_csv(file_name, index=False)
     data_aggregation(results, ticker)
-    data_aggregation2(results, ticker)
+    get_1d_data(ticker)
