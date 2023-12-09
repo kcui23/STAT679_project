@@ -154,9 +154,9 @@ function mousemove(event) {
 
     tooltip.html("Date: " + d.date + "<br/>" +
         "Price: " + d.close.toFixed(2) + "<br/>" +
-        "<span style='color: darkgreen;'> Bullish: " + d.bullish + "</span> <br/>" +
+        "<span style='color: #1666ba;'> Bullish: " + d.bullish + "</span> <br/>" +
         "Neutral: " + d.neutral + "<br/>" +
-        "<span style='color: darkred;'> Bearish: " + d.bearish + "</span>")
+        "<span style='color: #e27589;'> Bearish: " + d.bearish + "</span>")
         .transition()
         .duration(100)
         .ease(d3.easeLinear)
