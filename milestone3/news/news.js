@@ -82,16 +82,6 @@ let svg = d3.select("svg")
         "height": height + margin.top + margin.bottom
     })
 
-svg.append("text")
-    .attrs({
-        "x": 80,
-        "y": (margin.top / 2 + 8),
-        "text-anchor": "middle"
-    })
-    .style("font-size", "25px")
-    .style("text-decoration", "underline")
-    .text("Nvidia")
-
 svg.append("defs")
     .append("clipPath")
     .attr("id", "clip")
@@ -156,15 +146,15 @@ function mousemove(event) {
 
     tooltip.html("Date: " + d.date + "<br/>" +
         "Price: " + d.close.toFixed(2) + "<br/>" +
-        "Bullish: " + d.bullish + "<br/>" +
+        "<span style='color: darkgreen;'> Bullish: " + d.bullish + "</span> <br/>" +
         "Neutral: " + d.neutral + "<br/>" +
-        "Bearish: " + d.bearish)
+        "<span style='color: darkred;'> Bearish: " + d.bearish + "</span>")
         .transition()
         .duration(100)
         .ease(d3.easeLinear)
         .style("left", xPosition + "px")
         .style("top", yPosition + "px")
-        .style("opacity", 0.8) 
+        .style("opacity", 0.8)
         .style("z-index", "10")
 }
 
@@ -304,6 +294,55 @@ function visualize(ini_data) {
     add_hover_info()
 }
 
-Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone2/news/news_nvda_1d_data.csv"),
-d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone2/news/news_nvda_time_close_sent.csv")])
-    .then(visualize)
+function clear() {
+    d3.selectAll("text").remove()
+    d3.selectAll("path").remove()
+    d3.selectAll(".rect").remove()
+    d3.selectAll(".brush").remove()
+    d3.selectAll(".y.axis").remove()
+    d3.selectAll(".x.axis").remove()
+}
+
+function add_title(title) {
+    let company_name = {
+        "aapl": "Apple",
+        "nvda": "NVIDIA",
+        "amzn": "Amazon",
+        "msft": "Microsoft",
+        "goog": "Google",
+        "fb": "Facebook",
+        "tsla": "Tesla"
+    }
+    title = company_name[title]
+    svg.append("text")
+        .attrs({
+            "x": 80,
+            "y": (margin.top / 2 + 8),
+            "text-anchor": "middle"
+        })
+        .style("font-size", "25px")
+        .style("text-decoration", "underline")
+        .text(title)
+}
+
+d3.select("#companySelect")
+    .on("change", function () {
+        let selectedValue = d3.select(this).property("value");
+        clear()
+        add_title(selectedValue)
+
+        if (selectedValue === "nvda") {
+            Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_1d_data.csv"),
+            d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_time_close_sent.csv")])
+                .then(visualize)
+        } else if (selectedValue === "appl") {
+            Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_aapl_1d_data.csv"),
+            d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_aapl_time_close_sent.csv")])
+                .then(visualize)
+        }
+    });
+
+
+// Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_1d_data.csv"),
+// d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_time_close_sent.csv")])
+//     .then(visualize)
