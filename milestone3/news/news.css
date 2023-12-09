@@ -1,0 +1,33 @@
+#newsList {
+    margin: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.news-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.news-item {
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.news-item td {
+    padding: 10px;
+    text-align: left;
+}
+
+.news-item.bullish {
+    background-color: #e6f7ff;
+    /* Light blue for Bullish */
+}
+
+.news-item.bearish {
+    background-color: #faeded;
+    /* Light pink for Bearish */
+}
+
+.news-item:hover {
+    background-color: #f5f5f5;
+}

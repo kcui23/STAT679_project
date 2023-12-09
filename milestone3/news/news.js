@@ -1,4 +1,4 @@
-let data, combinedData;
+let data, news_data, combinedData;
 let parseDate = d3.timeParse("%Y-%m-%d")
 let bisectDate = d3.bisector(function (d) { return parseDate(d.date); }).left
 let tooltip = d3.select("body").append("div")
@@ -206,7 +206,6 @@ function add_main_chart(data) {
         .attrs({
             "class": "area",
             "d": area2,
-            "clip-path": "url(#clip)"
         })
 }
 
@@ -259,7 +258,7 @@ function visualize(ini_data) {
             close: parseFloat(d.Close)
         }
     })
-    console.log(data)
+    console.log("data", data)
 
     sentiment_data = ini_data[1].map(function (d) {
         return {
@@ -270,7 +269,17 @@ function visualize(ini_data) {
             neutral: parseInt(d.Neutral, 10)
         }
     })
-    console.log(sentiment_data)
+    console.log("sentiment_data", sentiment_data)
+
+    news_data = ini_data[2].map(function (d) {
+        return {
+            date: d.time,
+            title: d.title,
+            sentiment: d.sentiment
+        }
+    })
+    console.log("news_data", news_data)
+
 
     combinedData = data.map(d => {
         let sentiment = sentiment_data.find(sd => sd.date === d.date)
@@ -293,6 +302,7 @@ function visualize(ini_data) {
     addSentimentLinesAndAreas(combinedData)
     add_brush()
     add_hover_info()
+    displayNewsTitles(news_data)
 }
 
 function clear() {
@@ -327,20 +337,47 @@ function add_title(title) {
         .text(title)
 }
 
+function displayNewsTitles(newsArray) {
+    let newsListDiv = document.getElementById('newsList');
+    let table = document.createElement('table');
+    table.className = 'news-table';
+
+    newsArray.forEach(newsItem => {
+        let row = document.createElement('tr');
+        row.className = 'news-item ' + newsItem.sentiment.toLowerCase();
+
+        let titleCell = document.createElement('td');
+        titleCell.textContent = newsItem.title;
+        row.appendChild(titleCell);
+
+        let dateCell = document.createElement('td');
+        dateCell.textContent = newsItem.date;
+        row.appendChild(dateCell);
+
+        let sentimentCell = document.createElement('td');
+        sentimentCell.textContent = newsItem.sentiment;
+        row.appendChild(sentimentCell);
+
+        table.appendChild(row);
+    });
+
+    newsListDiv.appendChild(table);
+}
+
 d3.select("#companySelect")
     .on("change", function () {
         let selectedValue = d3.select(this).property("value");
         clear()
         add_title(selectedValue)
 
+        news = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + ".csv"
         news_1d_data = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_1d_data.csv"
         news_time_close_sent = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_time_close_sent.csv"
-        Promise.all([d3.csv(news_1d_data),
-        d3.csv(news_time_close_sent)])
+        Promise.all([d3.csv(news_1d_data), d3.csv(news_time_close_sent), d3.csv(news)])
             .then(visualize)
     });
 
 
-// Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_1d_data.csv"),
-// d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/news_nvda_time_close_sent.csv")])
+// Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_nvda_1d_data.csv"),
+// d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_nvda_time_close_sent.csv")])
 //     .then(visualize)
