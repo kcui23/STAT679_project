@@ -216,7 +216,7 @@ function addSentimentLinesAndAreas(combinedData) {
         .attrs({
             "class": "bullishLine",
             "d": bullishLine,
-            "stroke": "green",
+            "stroke": "#1666ba",
             "fill": "none",
             "clip-path": "url(#clip)"
         })
@@ -226,7 +226,7 @@ function addSentimentLinesAndAreas(combinedData) {
         .attrs({
             "class": "bearishLine",
             "d": bearishLine,
-            "stroke": "red",
+            "stroke": "#ff8dc6",
             "fill": "none",
             "clip-path": "url(#clip)"
         })
@@ -236,7 +236,7 @@ function addSentimentLinesAndAreas(combinedData) {
         .attrs({
             "class": "bullishArea",
             "d": bullishArea,
-            "fill": "lightgreen",
+            "fill": "#bedaf7",
             "opacity": 0.5,
             "clip-path": "url(#clip)"
         })
@@ -246,7 +246,7 @@ function addSentimentLinesAndAreas(combinedData) {
         .attrs({
             "class": "bearishArea",
             "d": bearishArea,
-            "fill": "lightcoral",
+            "fill": "#ffcde6",
             "opacity": 0.5,
             "clip-path": "url(#clip)"
         })
