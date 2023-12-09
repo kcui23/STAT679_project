@@ -1,4 +1,5 @@
-let data, news_data, combinedData;
+let data, news_data, original_news_data, combinedData;
+let currentSentimentFilter = 'all';
 let parseDate = d3.timeParse("%Y-%m-%d")
 let bisectDate = d3.bisector(function (d) { return parseDate(d.date); }).left
 let tooltip = d3.select("body").append("div")
@@ -121,10 +122,10 @@ function brushed(event) {
 
     let newsWithinBrush = news_data.filter(newsItem => {
         let newsDate = parseDate(newsItem.date);
-        console.log(newsDate, x.domain()[0], x.domain()[1])
         return newsDate >= x.domain()[0] && newsDate <= x.domain()[1];
     });
-
+    original_news_data = newsWithinBrush;
+    newsWithinBrush = newsWithinBrush.filter(d => { return currentSentimentFilter === 'all' || d.sentiment === currentSentimentFilter });
     displayNewsTitles(newsWithinBrush);
 }
 
@@ -285,6 +286,7 @@ function visualize(ini_data) {
             sentiment: d.sentiment
         }
     })
+    original_news_data = news_data;
     console.log("news_data", news_data)
 
 
@@ -351,6 +353,38 @@ function displayNewsTitles(newsArray) {
     let table = document.createElement('table');
     table.className = 'news-table';
 
+    let headerRow = document.createElement('tr');
+    let titleHeader = document.createElement('th');
+    titleHeader.textContent = 'Title';
+    headerRow.appendChild(titleHeader);
+
+    let dateHeader = document.createElement('th');
+    dateHeader.textContent = 'Date';
+    headerRow.appendChild(dateHeader);
+
+    let sentimentHeader = document.createElement('th');
+    sentimentHeader.textContent = 'Sentiment';
+    headerRow.appendChild(sentimentHeader);
+
+    let existingFilter = document.getElementById('newsFilter');
+    if (!existingFilter) {
+        let filterHeader = document.createElement('th');
+        let filterSelect = document.createElement('select');
+        filterSelect.id = 'newsFilter';
+        filterSelect.innerHTML = `
+            <option value="all">All</option>
+            <option value="Bullish">Bullish</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Bearish">Bearish</option>
+        `;
+        filterSelect.value = currentSentimentFilter;
+        filterSelect.onchange = function() { filterNews(this.value); };
+        filterHeader.appendChild(filterSelect);
+        headerRow.appendChild(filterHeader);
+    }
+
+    table.appendChild(headerRow);
+
     newsArray.forEach(newsItem => {
         let row = document.createElement('tr');
         row.className = 'news-item ' + newsItem.sentiment.toLowerCase();
@@ -371,6 +405,21 @@ function displayNewsTitles(newsArray) {
     });
 
     newsListDiv.appendChild(table);
+}
+
+function filterNews(sentiment) {
+    currentSentimentFilter = sentiment;
+
+    let filteredNews;
+    if (sentiment === "all") {
+        filteredNews = original_news_data;
+    } else {
+        filteredNews = original_news_data.filter(newsItem => newsItem.sentiment === sentiment);
+    }
+    displayNewsTitles(filteredNews);
+
+    let filterSelect = document.getElementById('newsFilter');
+    filterSelect.value = sentiment;
 }
 
 d3.select("#companySelect")
