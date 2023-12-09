@@ -111,7 +111,6 @@ function brushed(event) {
         d3.max(dataWithinBrush, function (d) { return d.close - (-10) * d.bearish + 20 })
     ])
 
-
     focus.select(".y.axis").call(yAxis);
     focus.select(".line").attr("d", line);
     focus.select(".bullishLine").attr("d", bullishLine);
@@ -119,6 +118,14 @@ function brushed(event) {
     focus.select(".bullishArea").attr("d", bullishArea);
     focus.select(".bearishArea").attr("d", bearishArea);
     focus.select(".x.axis").call(xAxis);
+
+    let newsWithinBrush = news_data.filter(newsItem => {
+        let newsDate = parseDate(newsItem.date);
+        console.log(newsDate, x.domain()[0], x.domain()[1])
+        return newsDate >= x.domain()[0] && newsDate <= x.domain()[1];
+    });
+
+    displayNewsTitles(newsWithinBrush);
 }
 
 function add_axis() {
@@ -313,6 +320,7 @@ function clear() {
     d3.selectAll(".y.axis").remove()
     d3.selectAll(".x.axis").remove()
     d3.selectAll("#hover_info").remove()
+    d3.select('#newsList .news-table').remove()
 }
 
 function add_title(title) {
@@ -339,6 +347,7 @@ function add_title(title) {
 
 function displayNewsTitles(newsArray) {
     let newsListDiv = document.getElementById('newsList');
+    newsListDiv.innerHTML = '';
     let table = document.createElement('table');
     table.className = 'news-table';
 
@@ -368,13 +377,13 @@ d3.select("#companySelect")
     .on("change", function () {
         let selectedValue = d3.select(this).property("value");
         clear()
-        add_title(selectedValue)
 
         news = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + ".csv"
         news_1d_data = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_1d_data.csv"
         news_time_close_sent = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_time_close_sent.csv"
         Promise.all([d3.csv(news_1d_data), d3.csv(news_time_close_sent), d3.csv(news)])
             .then(visualize)
+        add_title(selectedValue)
     });
 
 
