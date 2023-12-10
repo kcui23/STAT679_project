@@ -102,14 +102,23 @@ function brushed(event) {
     if (event.sourceEvent && event.sourceEvent.type === "zoom") return
     let s = event.selection || x2.range()
     x.domain(s.map(x2.invert, x2))
+
+    const timeRange = x.domain();
+    const timeDifference = timeRange[1] - timeRange[0];
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneMonth = oneDay * 30;
+
+    const xAxisFormat = timeDifference < oneMonth * 5 ? d3.timeFormat("%b %d") : d3.timeFormat("%Y %b");
+    xAxis.tickFormat(xAxisFormat);
+
     let dataWithinBrush = combinedData.filter(d => {
         let date = parseDate(d.date);
         return date >= x.domain()[0] && date <= x.domain()[1];
     });
 
     y.domain([
-        d3.min(dataWithinBrush, function (d) { return d.close - 10 * d.bullish - 20 }),
-        d3.max(dataWithinBrush, function (d) { return d.close - (-10) * d.bearish + 20 })
+        d3.min(dataWithinBrush, function (d) { return d.close - (d.close / 40) * d.bearish - (d.close / 15) }),
+        d3.max(dataWithinBrush, function (d) { return d.close - (-(d.close / 40)) * d.bullish + (d.close / 15) })
     ])
 
     focus.select(".y.axis").call(yAxis);
@@ -153,7 +162,7 @@ function mousemove(event) {
         yPosition = y(d.close) + y(d.bearish) * 0.1 + margin.top - tooltip.node().getBoundingClientRect().height - 10; // 10px above the data point
 
     tooltip.html("Date: " + d.date + "<br/>" +
-        "Price(Close): " + d.close.toFixed(2) + "<br/>" +
+        "Price (Close): " + d.close.toFixed(2) + "<br/>" +
         "<span style='color: #1666ba;'> Bullish: " + d.bullish + "</span> <br/>" +
         "Neutral: " + d.neutral + "<br/>" +
         "<span style='color: #e27589;'> Bearish: " + d.bearish + "</span>")
