@@ -153,7 +153,7 @@ function mousemove(event) {
         yPosition = y(d.close) + y(d.bearish) * 0.1 + margin.top - tooltip.node().getBoundingClientRect().height - 10; // 10px above the data point
 
     tooltip.html("Date: " + d.date + "<br/>" +
-        "Price: " + d.close.toFixed(2) + "<br/>" +
+        "Price(Close): " + d.close.toFixed(2) + "<br/>" +
         "<span style='color: #1666ba;'> Bullish: " + d.bullish + "</span> <br/>" +
         "Neutral: " + d.neutral + "<br/>" +
         "<span style='color: #e27589;'> Bearish: " + d.bearish + "</span>")
@@ -198,6 +198,22 @@ function add_brush() {
 }
 
 function add_main_chart(data) {
+    var gradient = svg.append("defs")
+        .append("linearGradient")
+        .attr("id", "gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "100%");
+
+    gradient.append("stop")
+        .attr("offset", "0%")
+        .attr("style", "stop-color: #1666ba; stop-opacity: 1");
+
+    gradient.append("stop")
+        .attr("offset", "100%")
+        .attr("style", "stop-color: white; stop-opacity: 1");
+
     focus.append("path")
         .datum(data)
         .attrs({
@@ -214,6 +230,7 @@ function add_main_chart(data) {
         .attrs({
             "class": "area",
             "d": area2,
+            "fill": "url(#gradient)"
         })
 }
 
@@ -355,7 +372,7 @@ function displayNewsTitles(newsArray) {
 
     let headerRow = document.createElement('tr');
     let titleHeader = document.createElement('th');
-    titleHeader.textContent = 'Title';
+    titleHeader.textContent = 'News Title';
     headerRow.appendChild(titleHeader);
 
     let dateHeader = document.createElement('th');
@@ -378,7 +395,7 @@ function displayNewsTitles(newsArray) {
             <option value="Bearish">Bearish</option>
         `;
         filterSelect.value = currentSentimentFilter;
-        filterSelect.onchange = function() { filterNews(this.value); };
+        filterSelect.onchange = function () { filterNews(this.value); };
         filterHeader.appendChild(filterSelect);
         headerRow.appendChild(filterHeader);
     }
