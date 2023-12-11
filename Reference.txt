@@ -1,0 +1,10 @@
+Reference
+[1] Victor, J. N., Montgomery, A. H., & Lubell, M. (Eds.). (2017). The Oxford handbook of political networks. Oxford University Press.
+[2] Sui, L., & Sun, L. (2016). Spillover effects between exchange rates and stock prices: Evidence from BRICS around the recent global financial crisis. Research in International Business and Finance, 36, 459-471.
+[3] Talluri, K. T., & Van Ryzin, G. J. (2012). Revenue management under a general discrete choice model of consumer behavior. Management Science, 58(1), 15-33.
+[4] Heer, J., Bostock, M., & Ogievetsky, V. (2010). A tour through the visualization zoo. Communications of the ACM, 53(6), 59-67.
+[5] Montero, F. J., & Baeza, M. (2012). Timeline Viewer—A Tool for Visual and Interactive Ant Colony Optimization Algorithm Execution. International Journal of Artificial Intelligence, 8(A12), 71-82.
+[6] Lopez-Lira, A., & Tang, Y. (2023). Can chatgpt forecast stock price movements? return predictability and large language models. arXiv preprint arXiv:2304.07619. 
+[7] Hagenau, M., Liebmann, M., & Neumann, D. (2013). Automated news reading: Stock price prediction based on financial news using context-capturing features. Decision support systems, 55(3), 685-697.
+[8]Emma3129. 2023. Global Monetary Policy Tracker. Tableau. 
+https://public.tableau.com/app/profile/emma3129/viz/Policyrateinteractive-12616/GlobalMonetaryPolicyTracker
