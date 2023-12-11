@@ -243,6 +243,44 @@ function add_main_chart(data) {
         })
 }
 
+function add_labels() {
+    let legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("id", "sentimentLegend")
+        .attr("transform", "translate(50,30)");
+
+    legend.append("rect")
+        .attr("x", 15)
+        .attr("y", 10)
+        .attr("width", 30)
+        .attr("height", 18)
+        .attr("rx", 5)
+        .attr("stroke", "#1666ba")
+        .style("fill", "#bedaf7");
+    legend.append("text")
+        .attr("x", 50)
+        .attr("y", 21)
+        .text("Bullish News")
+        .style("font-size", "12px")
+        .attr("alignment-baseline", "middle");
+
+    legend.append("rect")
+        .attr("x", 15)
+        .attr("y", 35)
+        .attr("width", 30)
+        .attr("height", 18)
+        .attr("rx", 5)
+        .attr("stroke", "#ff8dc6")
+        .style("fill", "#ffcde6");
+    legend.append("text")
+        .attr("x", 50)
+        .attr("y", 46)
+        .text("Bearish News")
+        .style("font-size", "12px")
+        .attr("alignment-baseline", "middle");
+
+}
+
 function addSentimentLinesAndAreas(combinedData) {
     focus.append("path")
         .datum(combinedData)
@@ -338,6 +376,7 @@ function visualize(ini_data) {
     add_brush()
     add_hover_info()
     displayNewsTitles(news_data)
+    add_labels()
 }
 
 function clear() {
@@ -348,6 +387,7 @@ function clear() {
     d3.selectAll(".y.axis").remove()
     d3.selectAll(".x.axis").remove()
     d3.selectAll("#hover_info").remove()
+    d3.selectAll("#sentimentLegend").remove()
     d3.select('#newsList .news-table').remove()
 }
 
@@ -461,7 +501,3 @@ d3.select("#companySelect")
         add_title(selectedValue)
     });
 
-
-// Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_nvda_1d_data.csv"),
-// d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_nvda_time_close_sent.csv")])
-//     .then(visualize)
