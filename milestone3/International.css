@@ -64,3 +64,42 @@
     fill: #272525;
     margin-right: 10px; /* Add some margin to separate the color boxes from the text */
 }
+
+#y_axis .domain {
+    display: none;
+}
+
+#slider-container {
+  position: fixed; /* or 'relative', 'fixed', etc., depending on need */
+  top: 20px; /* Adjust this value to move down */
+  left: 750px; /* Adjust this value to move right */
+  /* Add other styling as needed */
+}
+
+#reset-button {
+  position: fixed; /* or 'relative', 'fixed', etc., depending on need */
+  top: 20px; /* Adjust this value to move down */
+  left: 50px; /* Adjust this value to move right */
+  /* Add other styling as needed */
+}
+
+#matrix-plot  {
+  position: fixed; /* or 'relative', 'fixed', etc., depending on need */
+  top: 40px; /* Adjust this value to move down */
+  left: 50px; /* Adjust this value to move right */
+  /* Add other styling as needed */
+}
+
+#worldmap  {
+  position: fixed; /* or 'relative', 'fixed', etc., depending on need */
+  top: 40px; /* Adjust this value to move down */
+  left: 700px; /* Adjust this value to move right */
+  /* Add other styling as needed */
+}
+
+#gdplines  {
+  position: fixed; /* or 'relative', 'fixed', etc., depending on need */
+  top: 600px; /* Adjust this value to move down */
+  left: 50px; /* Adjust this value to move right */
+  /* Add other styling as needed */
+}

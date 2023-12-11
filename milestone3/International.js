@@ -274,7 +274,7 @@ function mouseout() {
 }
 
 function visualize_line(data) {
-    let margin = { top: 10, right: 10, bottom: 20, left: 50 };
+    let margin = { top: 10, right: 10, bottom: 20, left: 100 };
     
     data = nest(data);
     draw_axes(make_scales_gdp(data, margin),margin);
@@ -301,7 +301,7 @@ function make_scales_gdp(data, margin) {
             .domain([2000, 2022])
             .range([margin.left, 1000 - margin.right]),
         y: d3.scaleLinear()
-            .domain(d3.extent(data.map(d => d.GDP)))
+            .domain(d3.extent(data[0].map(d => d.GDP)))
             .range([200 - margin.bottom, margin.top])
     };
 }
@@ -348,25 +348,26 @@ function draw_lines(selectedCountry, nested, scales) {
 
 function draw_axes(scales, margin) {
     let x_axis = d3.axisBottom(scales.x).tickFormat(d3.format("d"));
-    d3.select("#x_axis")
+    d3.select("#x_axis").append("g")
         .attr("transform", `translate(0, ${200 - margin.bottom})`)
         .call(x_axis);
 
     let y_axis = d3.axisLeft(scales.y).tickFormat(d3.format(".2s"));
-    d3.select("#y_axis")
+    d3.select("#y_axis").append("g")
         .attr("transform", `translate(${margin.left}, 0)`)
         .call(y_axis);
 }
 
 function updateLineChart(selectedCountry) {
-    let margin = { top: 10, right: 10, bottom: 20, left: 50 };
+    let margin = { top: 10, right: 10, bottom: 20, left: 100 };
     let filteredData = originalData.filter(d=> d[0].Country_Name == selectedCountry);
     updateYAxis(make_scales_gdp(filteredData,margin));
     draw_lines(selectedCountry, filteredData, make_scales_gdp(filteredData,margin));
 }
 
 function updateYAxis(myscale) {
-    let y_axis = d3.axisLeft().scale(myscale.y),
+    let margin = { top: 10, right: 10, bottom: 20, left: 100 };
+    let y_axis = d3.axisLeft().scale(myscale.y).tickFormat(d3.format(".2s")),
         yAxisElement = d3.select("#axes").selectAll("#y_axis").data([0]);
     let yAxisEnter = yAxisElement.enter().append("g").attr("id", "y_axis");
     yAxisElement = yAxisEnter.merge(yAxisElement);
@@ -375,7 +376,7 @@ function updateYAxis(myscale) {
         .duration(500)
         .ease(d3.easeExp)
         .call(y_axis)
-        .attr("transform", `translate(${margins.left}, 0)`);
+        .attr("transform", `translate(${margin.left}, 0)`);
 }
 
 function updateMap(year, data) {
