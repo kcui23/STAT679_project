@@ -159,7 +159,7 @@ function mousemove(event) {
         d = x0 - parseDate(d0.date) > parseDate(d1.date) - x0 ? d1 : d0;
 
     let xPosition = x(parseDate(d.date)) + 100 + margin.left - tooltip.node().getBoundingClientRect().width / 2,
-        yPosition = y(d.close) + y(d.bearish) * 0.1 + margin.top - tooltip.node().getBoundingClientRect().height - 10; // 10px above the data point
+        yPosition = y(d.close) + y(d.bearish) * 0.1 + margin.top - tooltip.node().getBoundingClientRect().height + 400; // 10px above the data point
 
     tooltip.html("Date: " + d.date + "<br/>" +
         "Price (Close): " + d.close.toFixed(2) + "<br/>" +
