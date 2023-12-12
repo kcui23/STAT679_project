@@ -2,6 +2,7 @@
 title: "MS3-Yuda"
 output: html_document
 date: "2023-12-08"
+runtime: shiny
 ---
 
 ```{r}
@@ -16,7 +17,7 @@ library(tmaptools)
 library(sf)
 library(tigris)
 library(plotly)
-data <- read_csv('Fortune_1000.csv')
+data <- read_csv('https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/Yudapart/Fortune_1000.csv')
 data <- data[,1:9]
 names(data)[6] <- 'employees'
 data <- data[!is.na(data$employees),]
