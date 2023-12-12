@@ -365,6 +365,23 @@ function visualize(ini_data) {
     })
     console.log(combinedData)
 
+    revenue_data = ini_data[3].map(function(d){
+        return{
+            date: d.date,
+            close: parseFloat(d.revenue)
+        }
+
+    })
+    console.log("revenue_data")
+
+    profit_data = ini_data[4].map(function(d){
+        return{
+            date: d.date,
+            close: parseFloat(d.profit)
+        }
+    })
+    console.log(profit_data)
+
     x.domain(d3.extent(combinedData, function (d) { return parseDate(d.date) }))
     y.domain([0, d3.max(combinedData, function (d) { return d.close })])
     x2.domain(x.domain())
@@ -488,16 +505,118 @@ function filterNews(sentiment) {
     filterSelect.value = sentiment;
 }
 
+function createLineChart(containerId, dataUrl, color, valuetype) {
+    d3.select("#" + containerId)
+        .selectAll('svg')
+        .remove();
+
+    var margin = {top: 30, right: 20, bottom: 30, left: 50},
+        width = 600 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    var parseDate = d3.timeParse("%Y/%m/%d");
+
+    var x = d3.scaleTime().range([0, width]);
+    var y = d3.scaleLinear().range([height, 0]);
+
+    var valueline = d3.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d.value); });
+
+    var svg = d3.select("#" + containerId)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+        svg.append("text")
+            .attr("x", (width / 2))             
+            .attr("y", 0 - (margin.top / 2))
+            .attr("text-anchor", "middle")  
+            .style("font-size", "16px") 
+            .text(valuetype);
+
+    var div = d3.select("body").append("div")    
+        .attr("class", "tooltip")               
+        .style("opacity", 0);
+
+    var formatTime = d3.timeFormat("%Y/%m/%d");
+
+    d3.csv(dataUrl).then(function(data) {
+        data.forEach(function(d) {
+            d.date = parseDate(d.date);
+            d.value = +d.value;
+        });
+
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+        svg.append("path")
+            .data([data])
+            .attr("class", "line")
+            .style("stroke", color)
+            .attr("d", valueline);
+
+        svg.selectAll("dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("r", 5)
+            .attr("cx", function(d) { return x(d.date); })
+            .attr("cy", function(d) { return y(d.value); })
+            .style("opacity", 0)
+            .on("mouseover", function(event, d) {
+                d3.select(this).transition()
+                    .duration(300)
+                    .style("opacity", 1);
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html("Date:" + formatTime(d.date) + "<br/>"  + valuetype + ":" + d.value + "B")
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function(d) {
+                d3.select(this).transition()
+                    .duration(300)
+                    .style("opacity", 0);
+                div.transition()
+                    .duration(300)
+                    .style("opacity", 0);
+            });
+
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        svg.append("g")
+            .call(d3.axisLeft(y));
+    });
+}
+
 d3.select("#companySelect")
     .on("change", function () {
-        let selectedValue = d3.select(this).property("value");
         clear()
+        let selectedValue = d3.select(this).property("value");
+        console.log(selectedValue)
 
         news = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + ".csv"
         news_1d_data = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_1d_data.csv"
         news_time_close_sent = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_" + selectedValue + "_time_close_sent.csv"
-        Promise.all([d3.csv(news_1d_data), d3.csv(news_time_close_sent), d3.csv(news)])
+
+        revenue = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/revenue_" + selectedValue + ".csv"
+        profit = "https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/profit_" + selectedValue + ".csv"
+
+        createLineChart("revenue-chart", revenue , "steelblue", "Revenue");
+        createLineChart("profit-chart", profit , "green", "Profit");
+
+        Promise.all([d3.csv(news_1d_data), d3.csv(news_time_close_sent), d3.csv(news), d3.csv(revenue), d3.csv(profit)])
             .then(visualize)
+
         add_title(selectedValue)
     });
 
+
+// Promise.all([d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_nvda_1d_data.csv"),
+// d3.csv("https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/news/data/news_nvda_time_close_sent.csv")])
+//     .then(visualize)
