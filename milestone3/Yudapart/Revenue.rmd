@@ -1,0 +1,176 @@
+---
+title: "MS3-Yuda"
+output: html_document
+date: "2023-12-08"
+runtime: shiny
+---
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(ggplot2)
+library(shiny)
+library(maps)
+library(dplyr)
+library(tmap)
+library(tmaptools)
+library(sf)
+library(tigris)
+library(plotly)
+data <- read_csv('https://raw.githubusercontent.com/kcui23/STAT679_project/main/milestone3/Yudapart/Fortune_1000.csv')
+data <- data[,1:9]
+names(data)[6] <- 'employees'
+data <- data[!is.na(data$employees),]
+data <- data[data$employees < 100000, ]
+data$category <- 1
+data$category[data$sector%in%c('Aerospace & Defense','Chemicals','Energy','Engineering & Construction','Industrials','Materials','Motor Vehicles & Parts')] <- 'Industry'
+data$category[data$sector%in%c('Apparel','Food, Beverages & Tobacco','Food & Drug Stores','Retailing','Wholesalers')] <- 'Selling'
+data$category[data$sector%in%c('Business Services','Financials','Transportation')] <- 'Business'
+data$category[data$sector%in%c('Health Care','Hotels, Restaurants & Leisure','Household Products')] <- 'Living'
+data$category[data$sector%in%c('Media','Technology','Telecommunications')] <- 'Technology'
+```
+
+```{r}
+#Create the UI
+ui <- fluidPage(
+  fluidRow(
+    column(6,sliderInput('rank', 'Fortune Rank', max = max(data$rank), min = min(data$rank),c(1,1000), sep = '')),
+    column(6,sliderInput('employees', 'Company employees', max = max(data$employees), min = min(data$employees),c(160,2300000)))
+  ),
+  fluidRow(
+    column(3,checkboxGroupInput("category", "Categoty", choices = c("Industry", "Selling", "Business", "Living", "Technology"))),
+    column(9,uiOutput("dynamicCheckbox"))
+  ),
+  actionButton("refresh", "Generate Visualization"),
+  fluidRow(
+    column(4, plotOutput("piecount")),
+    column(8, plotOutput("piereven"))
+  ),
+  fluidRow(
+    column(12, plotOutput("boxreven"))
+  ),
+  fluidRow(
+    column(12, plotOutput("mapreven"))
+  )
+)
+
+#Create the plot functions
+piecount <- function(data){
+  data_summary <- data |>
+    group_by(sector) |>
+    summarise(count = n())
+  ggplot(data_summary, aes(x = '', y = count, fill = sector)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    labs(fill = "sector",
+         title = "Company number - Sectors") +
+    theme_void()+
+    theme(legend.position = "none",
+          plot.title = element_text(hjust = 0.5))
+}
+
+piereven <- function(data){
+  data_summary <- data |>
+    group_by(sector) |>
+    summarise(sum = sum(revenue))
+  ggplot(data_summary, aes(x = '', y = sum, fill = sector)) +
+    geom_bar(width = 1, stat = "identity") +
+    coord_polar(theta = "y") +
+    labs(fill = "sector",
+         title = 'Total Revenue - Sectors') +
+    theme_void()+
+    theme(plot.title = element_text(hjust = 0.5))
+}
+
+boxreven <- function(data){
+  data |>
+    filter(revenue >= quantile(data$revenue, 0.25), revenue <= quantile(data$revenue, 0.75)) |>
+  ggplot()+
+    geom_boxplot(aes(x = sector, y = revenue, fill = sector),outlier.shape = NA)+
+    xlab('')+
+    labs(title = 'Total Revenue - Sectors')+
+    theme(axis.text.x = element_blank(),
+          legend.position = "none",
+          plot.title = element_text(hjust = 0.5))
+}
+
+mapreven <- function(data){
+  us_geo <- tigris::states(class = "sf")[,c('REGION','STUSPS','geometry')]
+
+  data_summary <- data |>
+    group_by(state) |>
+    summarise(sum = sum(revenue))
+
+  map_data <- left_join(us_geo, data_summary, by = c("STUSPS"="state")) |>
+    filter(REGION != 9) |>
+    shift_geometry()
+
+  map_data$sum[is.na(map_data$sum)] <- 0 
+
+  tm_shape(map_data) +
+    tm_borders() +
+    tm_fill(col = "sum", palette = "Blues", title = 'Total Revenue - States') +
+    tm_layout(legend.outside = TRUE)
+}
+
+createDynamicLayout <- function(ui_elements, elements_per_row) {
+  num_elements <- length(ui_elements)
+  rows <- ceiling(num_elements / elements_per_row)
+  
+  ui_layout <- lapply(1:rows, function(row) {
+    start_index <- (row - 1) * elements_per_row + 1
+    end_index <- min(row * elements_per_row, num_elements)
+    elements_in_row <- ui_elements[start_index:end_index]
+    
+    fluidRow(
+      do.call(fluidRow, lapply(elements_in_row, function(ui_element) {
+        column(width = 9 / elements_per_row, ui_element)
+      }))
+    )
+  })
+  
+  do.call(tagList, ui_layout)
+}
+
+server <- function(input, output, session){
+    output$dynamicCheckbox <- renderUI({
+    if (is.null(input$category)) return(NULL)
+
+    selected_category <- input$category
+    checkbox_ui <- lapply(selected_category, function(layer) {
+      sector_choices <- unique(data$sector[data$category == layer])
+      checkboxGroupInput("sector", label = layer, choices = sector_choices, selected = sector_choices)
+    })
+
+    createDynamicLayout(checkbox_ui, elements_per_row = 3)
+
+  })
+    
+    data_subset <- eventReactive(input$refresh, {
+    data |>
+      mutate(selected = (
+        (rank >= input$rank[1]) &
+        (rank <= input$rank[2]) &
+        (employees >= input$employees[1]) &
+        (employees <= input$employees[2]) &
+        (sector %in% unique(input$sector))
+      )) |>
+      filter(selected)
+  })
+    
+    output$piecount <- renderPlot({
+      piecount(data_subset())
+    })
+    output$piereven <- renderPlot({
+      piereven(data_subset())
+    })
+    output$boxreven <- renderPlot({
+      boxreven(data_subset())
+    })
+    output$mapreven <- renderPlot({
+      mapreven(data_subset())
+    })
+}
+
+shinyApp(ui, server)
+```
